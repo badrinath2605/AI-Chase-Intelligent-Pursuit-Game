@@ -8,7 +8,7 @@
     #canvas { background:#222; image-rendering: pixelated; border: 2px solid #444; }
     #hud { width:300px; }
     .hint { font-size:13px; color:#bbb; }
-    /* popup */
+    
     #gameOverModal {
       position: fixed; left:0; top:0; right:0; bottom:0;
       display:none; align-items:center; justify-content:center;
@@ -74,7 +74,7 @@ function connect() {
       tileH = canvas.height / grid.length;
     } else if (msg.type === 'state') {
       state = msg.state;
-      // HUD updates
+      
       document.getElementById('score').textContent = state.score || 0;
       document.getElementById('coinsLeft').textContent = (state.coins ? state.coins.length : 0);
       document.getElementById('enemyCount').textContent = (state.enemies ? state.enemies.length : 0);
@@ -82,7 +82,7 @@ function connect() {
         document.getElementById('missionInfo').textContent = state.mission.running ? 'running' : 'finished';
         document.getElementById('timeLeft').textContent = Math.ceil(state.mission.time_left);
       }
-      // show game over modal when flagged
+      
       if (state.game_over) {
         document.getElementById('gameOverModal').style.display = 'flex';
       } else {
@@ -98,7 +98,7 @@ function sendMessage(obj){
   if (ws && ws.readyState === 1) ws.send(JSON.stringify(obj));
 }
 
-// Inputs
+
 let input = {dx:0, dy:0};
 function sendInput() {
   sendMessage({type:'input', dx: input.dx, dy: input.dy});
@@ -116,12 +116,12 @@ window.addEventListener('keyup', (e) => {
   sendInput();
 });
 
-// Buttons
+
 document.getElementById('resetBtn').onclick = () => sendMessage({type:'reset'});
 document.getElementById('resetAllBtn').onclick = () => sendMessage({type:'reset_all'});
 document.getElementById('restartBtn').onclick = () => sendMessage({type:'reset_all'});
 
-// rendering
+
 function draw() {
   ctx.clearRect(0,0,canvas.width,canvas.height);
   if (!grid || !state) {
@@ -134,7 +134,7 @@ function draw() {
   tileW = canvas.width / cols;
   tileH = canvas.height / rows;
 
-  // draw tiles
+  
   for (let y=0;y<rows;y++){
     for (let x=0;x<cols;x++){
       if (grid[y][x] === 1) ctx.fillStyle = "#333";
@@ -145,7 +145,7 @@ function draw() {
     }
   }
 
-  // draw coins
+  
   for (const c of state.coins) {
     ctx.fillStyle = "#ffd700";
     ctx.beginPath();
@@ -153,7 +153,7 @@ function draw() {
     ctx.fill();
   }
 
-  // draw enemy last_seen markers
+  
   for (const e of state.enemies) {
     if (e.last_seen) {
       ctx.fillStyle = "rgba(255,200,0,0.6)";
@@ -163,9 +163,9 @@ function draw() {
     }
   }
 
-  // draw enemies & their paths
+  
   for (const e of state.enemies) {
-    // path
+    
     if (e.path && e.path.length>0) {
       ctx.strokeStyle = "rgba(0,200,255,0.5)";
       ctx.lineWidth = 2;
@@ -178,16 +178,16 @@ function draw() {
       }
       ctx.stroke();
     }
-    // enemy
+    
     ctx.fillStyle = "#ff5555";
     ctx.fillRect((e.x+0.15)*tileW, (e.y+0.15)*tileH, tileW*0.7, tileH*0.7);
-    // state label
+    
     ctx.fillStyle = "#fff";
     ctx.font = "11px monospace";
     ctx.fillText(e.state||"", e.x*tileW, e.y*tileH - 4);
   }
 
-  // draw player
+ 
   const p = state.player;
   ctx.fillStyle = "#66ff66";
   ctx.beginPath();
